@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>Witch Maze Game</title>
+  <style>
+    body {
+      margin: 0;
+      background: #222;
+    }
+
+    #defaultCanvas0 {
+      display: block;
+      margin: 0 auto;
+      background: #88ddff;
+    }
+  </style>
+</head>
+
+<body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <script>
+    let player;
+    let obstacles = [];
+    let enemies = [];
+    let finishFlag;
+    let gameState = "playing"; // "playing", "win", "lose"
+    let jumpUses = 3, flyUses = 3, digUses = 3;
+
+    function setup() {
+      createCanvas(900, 500);
+      resetGame();
+    }
+
+    function resetGame() {
+      player = {
+        x: 150,
+        y: height / 2,
+        r: 20,
+        vy: 0,
+        onGround: false,
+        mode: "normal",     // normal, flying, digging
+        modeTimer: 0
+      };
+
+      obstacles = [];
+      enemies = [];
+      gameState = "playing";
+      jumpUses = 3;
+      flyUses = 3;
+      digUses = 3;
+
+      // Build a simple “unrolled” maze path:
+      let x = 300;
+      const groundY = height - 60;
+
+      // Straight section with low obstacles
+      for (let i = 0; i < 5; i++) {
+        obstacles.push({ x, y: groundY, w: 40, h: 40, type: "rock" });
+        x += 200;
+      }
+
+      // A pit to fly over
+      obstacles.push({ x, y: groundY, w: 150, h: 20, type: "pit" });
+      x += 250;
+
+      // Underground wall to dig under
+      obstacles.push({ x, y: groundY - 40, w: 60, h: 80, type: "wall" });
+      x += 250;
+
+      // Witch enemy
+      enemies.push({ x, y: groundY - 80, r: 25, type: "witch" });
+      x += 250;
+
+      // Crocodile enemy
+      enemies.push({ x, y: groundY - 20, r: 30, type: "croc" });
+      x += 250;
+
+      // Finish flag
+      finishFlag = { x, y: groundY - 100, w: 20, h: 100 };
+    }
+
+    function draw() {
+      background(180, 230, 255);
+
+      drawGround();
+      drawUI();
+
+      if (gameState === "playing") {
+        updatePlayer();
+        updateWorld();
+        checkCollisions();
+      }
+
+      drawWorld();
+      drawPlayer();
+      drawFinish();
+
+      if (gameState === "win") {
+        drawMessage("You reached the finish! 🎉");
+      } else if (gameState === "lose") {
+        drawMessage("Oh no! Click RESTART.");
+      }
+
+      drawRestartButton();
+    }
+
+    function drawGround() {
+      fill(40, 200, 80);
+      rect(0, height - 40, width, 40);
+    }
+
+    function drawUI() {
+      fill(0);
+      textSize(16);
+      textAlign(LEFT, TOP);
+      text("Jump (J): " + jumpUses, 10, 10);
+      text("Fly (F): " + flyUses, 10, 30);
+      text("Dig (K): " + digUses, 10, 50);
+    }
+
+    function updatePlayer() {
+      // Gravity unless flying
+      if (player.mode !== "flying") {
+        player.vy += 0.6;
+      } else {
+        player.vy = 0;
+      }
+
+      player.y += player.vy;
+
+      const groundLevel = height - 60;
+      if (player.mode === "digging") {
+        // Keep player underground
+        player.y = groundLevel + 20;
+      } else {
+        if (player.y + player.r > groundLevel) {
+          player.y = groundLevel - player.r;
+          player.vy = 0;
+          player.onGround = true;
+        } else {
+          player.onGround = false;
+        }
+      }
+
+      // Mode duration
+      if (player.mode !== "normal") {
+        player.modeTimer--;
+        if (player.modeTimer <= 0) {
+          player.mode = "normal";
+        }
+      }
+    }
+
+    function updateWorld() {
+      // Move everything left to simulate forward motion
+      const speed = 4;
+      for (let o of obstacles) o.x -= speed;
+      for (let e of enemies) e.x -= speed;
+      finishFlag.x -= speed;
+    }
+
+    function drawWorld() {
+      // Obstacles
+      for (let o of obstacles) {
+        if (o.type === "rock") {
+          fill(120);
+          rect(o.x, o.y - o.h, o.w, o.h);
+        } else if (o.type === "pit") {
+          fill(80, 60, 40);
+          rect(o.x, o.y, o.w, o.h);
+        } else if (o.type === "wall") {
+          fill(90, 50, 30);
+          rect(o.x, o.y - o.h, o.w, o.h);
+        }
+      }
+
+      // Enemies
+      for (let e of enemies) {
+        if (e.type === "witch") {
+          fill(0);
+          ellipse(e.x, e.y, e.r * 2, e.r * 2);
+          fill(255);
+          textAlign(CENTER, CENTER);
+          text("W", e.x, e.y);
+        } else if (e.type === "croc") {
+          fill(0, 150, 0);
+          ellipse(e.x, e.y, e.r * 2.4, e.r * 1.4);
+          fill(255);
+          textAlign(CENTER, CENTER);
+          text("C", e.x, e.y);
+        }
+      }
+    }
+
+    function drawPlayer() {
+      // Body
+      fill(255, 230, 0);
+      ellipse(player.x, player.y, player.r * 2, player.r * 2);
+
+      // Wings for flying
+      if (player.mode === "flying") {
+        fill(255, 255, 255, 200);
+        ellipse(player.x - 20, player.y, 20, 40);
+        ellipse(player.x + 20, player.y, 20, 40);
+      }
+
+      // Dirt overlay for digging
+      if (player.mode === "digging") {
+        fill(120, 80, 40, 160);
+        rect(player.x - player.r, player.y - player.r, player.r * 2, player.r * 2);
+      }
+    }
+
+    function drawFinish() {
+      fill(255, 0, 0);
+      rect(finishFlag.x, finishFlag.y, finishFlag.w, finishFlag.h);
+      fill(255);
+      textAlign(CENTER, BOTTOM);
+      text("Finish", finishFlag.x + finishFlag.w / 2, finishFlag.y);
+    }
+
+    function checkCollisions() {
+      // Finish
+      if (player.x + player.r > finishFlag.x &&
+        player.x - player.r < finishFlag.x + finishFlag.w &&
+        player.y + player.r > finishFlag.y &&
+        player.y - player.r < finishFlag.y + finishFlag.h) {
+        gameState = "win";
+      }
+
+      // Obstacles
+      for (let o of obstacles) {
+        if (o.type === "pit") {
+          // Player falls into pit unless flying
+          if (player.x > o.x && player.x < o.x + o.w &&
+            player.y + player.r > o.y && player.mode !== "flying") {
+            gameState = "lose";
+          }
+        } else if (o.type === "wall") {
+          if (circleRectCollision(player, o) && player.mode !== "digging") {
+            gameState = "lose";
+          }
+        } else if (o.type === "rock") {
+          if (circleRectCollision(player, o) && player.mode !== "jumping") {
+            gameState = "lose";
+          }
+        }
+      }
+
+      // Enemies
+      for (let e of enemies) {
+        if (dist(player.x, player.y, e.x, e.y) < player.r + e.r - 5) {
+          if (player.mode === "digging") continue; // safe underground
+          gameState = "lose";
+        }
+      }
+    }
+
+    function circleRectCollision(circle, rectObj) {
+      let testX = circle.x;
+      let testY = circle.y;
+
+      if (circle.x < rectObj.x) testX = rectObj.x;
+      else if (circle.x > rectObj.x + rectObj.w) testX = rectObj.x + rectObj.w;
+
+      if (circle.y < rectObj.y - rectObj.h) testY = rectObj.y - rectObj.h;
+      else if (circle.y > rectObj.y) testY = rectObj.y;
+
+      let d = dist(circle.x, circle.y, testX, testY);
+      return d <= circle.r;
+    }
+
+    // Controls
+    function keyPressed() {
+      if (gameState !== "playing") return;
+
+      if (key === 'J' || key === 'j') {
+        if (jumpUses > 0 && player.onGround) {
+          player.vy = -12;
+          player.mode = "jumping";
+          player.modeTimer = 20;
+          jumpUses--;
+        }
+      }
+
+      if (key === 'F' || key === 'f') {
+        if (flyUses > 0) {
+          player.mode = "flying";
+          player.modeTimer = 90; // ~1.5 seconds
+          flyUses--;
+        }
+      }
+
+      if (key === 'K' || key === 'k') {
+        if (digUses > 0) {
+          player.mode = "digging";
+          player.modeTimer = 60;
+          digUses--;
+        }
+      }
+    }
+
+    function mousePressed() {
+      // Restart button area
+      const bx = width - 150;
+      const by = 20;
+      const bw = 120;
+      const bh = 40;
+      if (mouseX >= bx && mouseX <= bx + bw &&
+        mouseY >= by && mouseY <= by + bh) {
+        resetGame();
+      }
+    }
+
+    function drawRestartButton() {
+      const bx = width - 150;
+      const by = 20;
+      const bw = 120;
+      const bh = 40;
+      fill(255, 200, 0);
+      rect(bx, by, bw, bh, 8);
+      fill(0);
+      textAlign(CENTER, CENTER);
+      textSize(14);
+      text("RESTART", bx + bw / 2, by + bh / 2);
+    }
+
+    function drawMessage(msg) {
+      fill(0, 0, 0, 180);
+      rect(width / 2 - 200, height / 2 - 40, 400, 80, 10);
+      fill(255);
+      textAlign(CENTER, CENTER);
+      textSize(22);
+      text(msg, width / 2, height / 2);
+    }
+  </script>
+</body>
+
+</html>
