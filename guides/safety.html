@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="mahanu-publish">
+<meta name="description" content="Safety and privacy — a Mahanu project.">
+<title>Safety and privacy · Mahanu</title>
+<link rel="icon" type="image/png" href="../resources/theme/base/icon.png">
+<link rel="apple-touch-icon" href="../resources/theme/base/icon.png">
+<script>try{var t=localStorage.getItem('site-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}</script>
+<link rel="stylesheet" href="../resources/theme/base/styles.css">
+<link rel="stylesheet" href="../resources/theme/base/katex.min.css">
+</head>
+<body class="layout-reading page-guides-safety">
+<div id="sky" aria-hidden="true"></div>
+<div id="page">
+<header class="site-header"><div><a class="brand" href="../index.html"><img class="brand-mark" src="../resources/theme/base/logo.png" width="349" height="155" alt="">Mahanu</a><nav><a class="request" href="/form.html">Request access</a><button type="button" class="theme-toggle" aria-label="Switch between light and dark theme" title="Switch theme"></button></nav></div></header>
+<main><article><h1>Safety and privacy</h1>
+<blockquote>
+<p><strong>Work in progress.</strong> This page describes the intended safeguards. Supervised
+accounts, public reporting, and hosted moderation are not live.</p>
+</blockquote>
+<p>Mahanu is built around projects, not public personal profiles. There is no
+follower graph, direct-message network, behavioral advertising, or infinite
+feed. A project&#39;s workspace is private — like a family folder, not a social
+profile — and members are invited one by one.</p>
+<h2>What outsiders can see</h2>
+<p>Projects are private by default. A project can separately choose to:</p>
+<ul>
+<li>show its name, tagline, and purpose in Explore; and</li>
+<li>publish selected documents or media.</li>
+</ul>
+<p>Neither choice publishes the member list or the rest of the project.</p>
+<h2>What Mahanu can see</h2>
+<p>Mahanu can read unencrypted project data stored on Mahanu servers. This access
+is used to operate the service and inspect hosted data for Code of Conduct
+enforcement.</p>
+<p>At server creation or first server sync, an owner may also allow Mahanu to use
+unencrypted project data to create support material for that project and generic,
+anonymous templates, examples, research, and guidance. This is on by default, can
+be changed later, affects only future use, and never lets Mahanu edit the project.
+Generic material must not identify or link back to the source project or members.</p>
+<p>Background commercial matching uses only public data. A signed-in adult may
+explicitly ask Mahanu to find sponsored support for a project. That request may use
+unpublished, unencrypted data the adult selects, but sponsors receive nothing unless
+an authorised adult submits an application. Passphrase-protected data is never used.</p>
+<h2>Protected files</h2>
+<p>A member may protect a supported small file with a passphrase entered on their
+device. Mahanu stores the encrypted file but cannot recover its passphrase or
+read its contents. Large protected files, protected media, protected metadata,
+search, and derived data are not supported initially.</p>
+<p>Before creating one, show this warning:</p>
+<blockquote>
+<p>Mahanu cannot read passphrase-protected files. By continuing, you agree that
+all project content, including protected files, follows Mahanu&#39;s Code of
+Conduct.</p>
+</blockquote>
+<p>Members share the passphrase outside Mahanu. Losing it means Mahanu cannot
+recover the file. Concurrent protected-file edits become visible versions or
+branches, not a silent last-writer-wins overwrite.</p>
+<h2>Joining and removal</h2>
+<p>Account invitation, device pairing, project invitation, membership, and sync are
+separate steps. Pairing a laptop does not grant it a project.</p>
+<p>Removing a member stops future project traffic after each project copy learns
+about the removal. It cannot recall readable files, encrypted files,
+passphrases, or keys already copied. Ordinary removal does not show a
+protected-file rotation warning. Manual rotation is available for a separately
+suspected passphrase or key compromise.</p>
+<h2>Children</h2>
+<p>The first family pilot uses guardian-operated devices and has no independent
+child account.</p>
+<p>Supervised accounts are a later goal. Before release, Mahanu needs tested
+guardian consent, approved devices, account switching, recovery, membership
+control, public actions, reporting, deletion, age handling, and
+jurisdiction-specific legal review. The
+<a href="../legal/guardian-addendum.html">Guardian Addendum</a> is a pre-launch draft, not a
+live promise.</p>
+<h2>Assistants and bots</h2>
+<p>An assistant is planned as an invoked helper. It may propose limited project
+changes and must wait for confirmation. It must not silently change membership,
+privacy, publishing, billing, or keys.</p>
+<p>Bot accounts and conduct automation are future features. Their draft rules are
+in the <a href="../legal/bots.html">Bot and Automation Policy</a>. Mahanu does not claim that
+automation can replace human review or inspect passphrase-protected files.</p>
+<h2>Hard boundaries</h2>
+<p>Mahanu will not sell project or member data, run behavioral advertising, show
+commercial content to children, create public child profiles, or give sponsors
+access to unpublished project work or member identities.</p>
+</article></main>
+<footer><nav class="social"><a href="https://github.com/mahanuhq/mahanu">GitHub</a><a href="https://x.com/mahanuhq">X</a><a href="https://instagram.com/mahanuhq">Instagram</a><a href="https://youtube.com/@mahanuhq">YouTube</a><a href="mailto:mahanu@mahanu.com">mahanu@mahanu.com</a></nav><p class="social-note">Bootstrapping channels only — early updates and the comic while Mahanu finds its people. Mahanu itself has no feed to follow.</p><p>Mahanu · free &amp; open source (MIT) · you own your files, always · no feeds, no ads, no likes</p><p class="license-note">Content: <a href="../LICENSE.html">Attribution · no verbatim resale</a></p></footer>
+</div>
+<script src="../resources/theme/base/app.js"></script>
+</body>
+</html>

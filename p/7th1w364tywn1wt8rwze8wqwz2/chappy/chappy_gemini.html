@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whiteboard Maze Runner</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&display=swap');
+
+        body {
+            background-color: #f0f4f8;
+            font-family: 'Kalam', cursive;
+            /* Looks like whiteboard marker */
+            color: #0033a0;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+
+        #gameCanvas {
+            background-color: #ffffff;
+            border: 4px solid #0033a0;
+            border-radius: 15px;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+            display: block;
+            margin: 0 auto;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            background: white;
+            border: 3px solid #0033a0;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            font-size: 18px;
+            font-family: 'Kalam', cursive;
+            color: #0033a0;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .btn:active {
+            transform: scale(0.9);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        #restartBtn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            background: #0033a0;
+            color: white;
+            font-size: 20px;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Run from the Witch & the Germ!</h1>
+    <canvas id="gameCanvas" width="800" height="400"></canvas>
+
+    <div class="controls">
+        <button class="btn" id="btnJump" onclick="doAction('jump')">Jump<br><span id="jumpCount">3</span> left</button>
+        <button class="btn" id="btnFly" onclick="doAction('fly')">Fly<br><span id="flyCount">3</span> left</button>
+        <button class="btn" id="btnDig" onclick="doAction('dig')">Dig<br><span id="digCount">3</span> left</button>
+    </div>
+
+    <button id="restartBtn" onclick="resetGame()">Click to start again!</button>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        // Game variables
+        let frames = 0;
+        let gameOver = false;
+        let gameWon = false;
+        let groundY = 300;
+
+        // Player resources
+        let resources = { jump: 3, fly: 3, dig: 3 };
+        let playerState = 'run'; // run, jump, fly, dig
+        let actionTimer = 0;
+
+        const player = {
+            x: 100,
+            y: groundY,
+            size: 40,
+            draw() {
+                ctx.font = "40px Arial";
+                if (playerState === 'run') ctx.fillText("🏃", this.x, this.y);
+                if (playerState === 'jump') ctx.fillText("🦘", this.x, this.y);
+                if (playerState === 'fly') ctx.fillText("👼", this.x, this.y);
+                if (playerState === 'dig') ctx.fillText("🕳️", this.x, this.y + 10);
+            },
+            update() {
+                if (actionTimer > 0) {
+                    actionTimer--;
+                    if (playerState === 'jump') this.y = groundY - 80;
+                    if (playerState === 'fly') this.y = groundY - 150;
+                    if (playerState === 'dig') this.y = groundY + 40;
+
+                    if (actionTimer === 0) {
+                        playerState = 'run';
+                        this.y = groundY;
+                    }
+                }
+            }
+        };
+
+        let obstacles = [];
+        let sequence = [];
+
+        // Setup the 9 obstacles based on the whiteboard (3 of each needed to win)
+        function generateSequence() {
+            let types = ['jump', 'jump', 'jump', 'fly', 'fly', 'fly', 'dig', 'dig', 'dig'];
+            types.sort(() => Math.random() - 0.5); // Shuffle
+            return types;
+        }
+
+        const obstacleSettings = {
+            'jump': { emoji: "🐺", text: "Wolf", y: groundY, height: 40 }, // Ground level, jump over
+            'fly': { emoji: "🛖", text: "Witch House", y: groundY, height: 100 }, // Very tall, must fly
+            'dig': { emoji: "🦠", text: "GERM!", y: groundY - 60, height: 60 } // Floating, must dig under
+        };
+
+        function spawnObstacle() {
+            if (sequence.length === 0) return;
+            if (frames % 150 === 0) {
+                let requiredAction = sequence.pop();
+                let setting = obstacleSettings[requiredAction];
+                obstacles.push({
+                    x: 800,
+                    y: setting.y,
+                    emoji: setting.emoji,
+                    text: setting.text,
+                    actionNeeded: requiredAction,
+                    passed: false
+                });
+            }
+        }
+
+        function doAction(action) {
+            if (gameOver || gameWon || playerState !== 'run') return;
+            if (resources[action] > 0) {
+                resources[action]--;
+                document.getElementById(action + "Count").innerText = resources[action];
+                playerState = action;
+                actionTimer = 60; // 1 second of duration (at 60fps)
+
+                // Disable button visually
+                if (resources[action] === 0) document.getElementById("btn" + action.charAt(0).toUpperCase() + action.slice(1)).disabled = true;
+            }
+        }
+
+        // Keyboard support
+        window.addEventListener("keydown", (e) => {
+            if (e.key === "ArrowUp" || e.key === "j") doAction('jump');
+            if (e.key === " " || e.key === "f") doAction('fly');
+            if (e.key === "ArrowDown" || e.key === "d") doAction('dig');
+        });
+
+        function update() {
+            if (gameOver || gameWon) return;
+            frames++;
+
+            player.update();
+            spawnObstacle();
+
+            // Check win condition
+            if (sequence.length === 0 && obstacles.length === 0) {
+                gameWon = true;
+                document.getElementById("restartBtn").style.display = "inline-block";
+            }
+
+            for (let i = 0; i < obstacles.length; i++) {
+                let obs = obstacles[i];
+                obs.x -= 4; // Speed of obstacles
+
+                // Collision Detection
+                if (obs.x < player.x + player.size && obs.x + 40 > player.x) {
+                    if (playerState !== obs.actionNeeded) {
+                        gameOver = true;
+                        document.getElementById("restartBtn").style.display = "inline-block";
+                    }
+                }
+
+                // Remove off-screen obstacles
+                if (obs.x < -50) {
+                    obstacles.splice(i, 1);
+                    i--;
+                }
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw ground & "Longest Crocodile" river decoration
+            ctx.fillStyle = "#a8d5e2";
+            ctx.fillRect(0, groundY + 10, canvas.width, canvas.height);
+            ctx.strokeStyle = "#0033a0";
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(0, groundY + 10);
+            ctx.lineTo(800, groundY + 10);
+            ctx.stroke();
+
+            if (gameWon) {
+                ctx.fillStyle = "#0033a0";
+                ctx.font = "bold 50px Kalam";
+                ctx.fillText("🏚️FINISH! You escaped the maze!", 80, 200);
+                return;
+            }
+
+            if (gameOver) {
+                ctx.fillStyle = "red";
+                ctx.font = "bold 50px Kalam";
+                ctx.fillText("DO NOT! DO IT! (Game Over)", 100, 200);
+                return;
+            }
+
+            player.draw();
+
+            for (let obs of obstacles) {
+                ctx.font = "40px Arial";
+                ctx.fillText(obs.emoji, obs.x, obs.y);
+                ctx.font = "16px Kalam";
+                ctx.fillStyle = "#0033a0";
+                ctx.fillText(obs.text, obs.x - 10, obs.y - 45);
+            }
+        }
+
+        function loop() {
+            update();
+            draw();
+            requestAnimationFrame(loop);
+        }
+
+        function resetGame() {
+            frames = 0;
+            gameOver = false;
+            gameWon = false;
+            obstacles = [];
+            sequence = generateSequence();
+            resources = { jump: 3, fly: 3, dig: 3 };
+            playerState = 'run';
+            actionTimer = 0;
+
+            ['jump', 'fly', 'dig'].forEach(act => {
+                document.getElementById(act + "Count").innerText = 3;
+                document.getElementById("btn" + act.charAt(0).toUpperCase() + act.slice(1)).disabled = false;
+            });
+
+            document.getElementById("restartBtn").style.display = "none";
+        }
+
+        // Start
+        resetGame();
+        loop();
+    </script>
+</body>
+
+</html>

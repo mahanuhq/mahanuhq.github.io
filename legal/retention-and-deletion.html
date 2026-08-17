@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="mahanu-publish">
+<meta name="description" content="Retention &amp; Deletion Policy — a Mahanu project.">
+<title>Retention &amp; Deletion Policy · Mahanu</title>
+<link rel="icon" type="image/png" href="../resources/theme/base/icon.png">
+<link rel="apple-touch-icon" href="../resources/theme/base/icon.png">
+<script>try{var t=localStorage.getItem('site-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}</script>
+<link rel="stylesheet" href="../resources/theme/base/styles.css">
+<link rel="stylesheet" href="../resources/theme/base/katex.min.css">
+</head>
+<body class="layout-reading page-legal-retention-and-deletion">
+<div id="sky" aria-hidden="true"></div>
+<div id="page">
+<header class="site-header"><div><a class="brand" href="../index.html"><img class="brand-mark" src="../resources/theme/base/logo.png" width="349" height="155" alt="">Mahanu</a><nav><a class="request" href="/form.html">Request access</a><button type="button" class="theme-toggle" aria-label="Switch between light and dark theme" title="Switch theme"></button></nav></div></header>
+<main><article><h1>Retention &amp; Deletion Policy</h1>
+<blockquote>
+<p><strong>Pre-launch draft · not yet in effect.</strong> The final version must match the real
+databases, backups, payment records, service providers, and laws in every launch
+country. This is the main source for how long Mahanu keeps data.</p>
+</blockquote>
+<h2>1. Principles</h2>
+<p>We keep personal data and project data only for as long as necessary to operate the service, honour a member’s choices, secure the service, resolve a dispute, and meet legal obligations. Deletion from Mahanu cannot erase material another authorised project member already copied or published elsewhere.</p>
+<p>The final schedule must be enforced by a tested deletion process. It must cover backups
+and service providers. A legal hold, security case, fraud investigation, or legal duty
+may delay deletion of specific records. Mahanu records the reason and ends the hold when
+it is no longer needed.</p>
+<h2>2. Proposed operational schedule</h2>
+<table>
+<thead>
+<tr>
+<th>Record</th>
+<th>Proposed maximum</th>
+<th>Deletion action</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>One-time-password code and verification attempts</td>
+<td>expiry plus 24 hours</td>
+<td>automatically purge</td>
+</tr>
+<tr>
+<td>Revoked, expired, or logged-out session token hashes</td>
+<td>30 days</td>
+<td>automatically purge</td>
+</tr>
+<tr>
+<td>Rate-limit and routine security logs</td>
+<td>30 days, unless incident-related</td>
+<td>automatically purge or aggregate</td>
+</tr>
+<tr>
+<td>Active account, membership, and project-permission records</td>
+<td>while the account/project remains active</td>
+<td>delete or anonymise after the account/project process below</td>
+</tr>
+<tr>
+<td>Project content and assets</td>
+<td>until an authorised owner deletes them or the project/account is closed</td>
+<td>remove from active storage; expire from backups on their documented cycle</td>
+</tr>
+<tr>
+<td>Future automated conduct evaluation</td>
+<td><strong>[period or not retained]</strong></td>
+<td>define before the feature launches; do not retain unflagged content by default</td>
+</tr>
+<tr>
+<td>Conduct flags and escalation material</td>
+<td><strong>[conduct record retention period]</strong></td>
+<td>restrict access; delete after review unless law requires preservation</td>
+</tr>
+<tr>
+<td>Account-deletion request</td>
+<td>30-day recovery window</td>
+<td>close access, then delete/anonymise eligible account records within 30 further days</td>
+</tr>
+<tr>
+<td>Reports, appeals, consent/invitation, and enforcement records</td>
+<td>3 years after closure</td>
+<td>delete or anonymise unless a longer legal/safety hold applies</td>
+</tr>
+<tr>
+<td>Billing and tax records</td>
+<td>the legally required period for the transaction</td>
+<td>isolate and delete when that period ends</td>
+</tr>
+<tr>
+<td>Encrypted backup copies</td>
+<td><strong>[backup retention period]</strong></td>
+<td>cryptographically or operationally expire on the same documented cycle</td>
+</tr>
+</tbody></table>
+<p>The final service must publish and enforce its backup-retention period. The
+account-deletion flow must explain which shared-project material remains with other
+members and which legal or billing records cannot be erased immediately.</p>
+<h2>3. Requests and verification</h2>
+<p>Use <strong><a href="mailto:privacy@mahanu.com">privacy@mahanu.com</a></strong> or <strong>[deletion request URL]</strong> to request deletion or use
+another privacy right. Mahanu makes a reasonable identity and authority check. A
+guardian acts for a supervised account. Mahanu confirms completion or explains what it
+kept and why.</p>
+<p>Project owners may remove a member’s access, but cannot erase the member’s independent account or copies already received. Removal stops future project delivery after enforcement; it does not require a protected-file rotation prompt. A user may separately rotate a file passphrase and DEK after a suspected compromise.</p>
+</article></main>
+<footer><nav class="social"><a href="https://github.com/mahanuhq/mahanu">GitHub</a><a href="https://x.com/mahanuhq">X</a><a href="https://instagram.com/mahanuhq">Instagram</a><a href="https://youtube.com/@mahanuhq">YouTube</a><a href="mailto:mahanu@mahanu.com">mahanu@mahanu.com</a></nav><p class="social-note">Bootstrapping channels only — early updates and the comic while Mahanu finds its people. Mahanu itself has no feed to follow.</p><p>Mahanu · free &amp; open source (MIT) · you own your files, always · no feeds, no ads, no likes</p><p class="license-note">Content: <a href="../LICENSE.html">Attribution · no verbatim resale</a></p></footer>
+</div>
+<script src="../resources/theme/base/app.js"></script>
+</body>
+</html>
